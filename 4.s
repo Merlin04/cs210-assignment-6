@@ -8,50 +8,31 @@
 
 .data
 
-node1:
-    .space 2 # value
-    .space 4 # address of next
-
-node2:
-    .space 2 # value
-    .space 4 # address of next
+node4:
+    .half 4
+    .align 2
+    .word 0
 
 node3:
-    .space 2 # value
-    .space 4 # address of next
+    .half 3
+    .align 2
+    .word node4
 
-node4:
-    .space 2 # value
-    .space 4 # address of next
+node2:
+    .half 2
+    .align 2
+    .word node3
+
+node1:
+    .half 1
+    .align 2
+    .word node2
 
 .text
 .globl main
 main:
 
-# testing: construct the linked list
-# by loading the address, then storing values
-
-la		$t0, node1		# 
-la      $t1, node2		#
-la      $t2, node3		#
-la      $t3, node4		#
-
-# store the values
-li      $t4, 1			#
-sw      $t4, 0($t0)		#
-li      $t4, 2			#
-sw      $t4, 0($t1)		#
-li      $t4, 3			#
-sw      $t4, 0($t2)		#
-li      $t4, 4			#
-sw      $t4, 0($t3)		#
-
-# link the nodes together
-sw      $t1, 2($t0)		#
-sw      $t2, 2($t1)		#
-sw      $t3, 2($t2)		#
-sw      $zero, 2($t3)		#
-
+# testing
 # store the address of the first node in $a0
 la      $a0, node1		#
 
@@ -60,12 +41,17 @@ la      $a0, node1		#
 li		$v0, 0		# $v0 = 0
 
 Loop:
-lw		$t0, 0($a0)	# $t0 = value
+lh		$t0, 0($a0)	# $t0 = value
 add		$v0, $v0, $t0	# $v0 = $v0 + $t0
-lw		$a0, 2($a0)	# $a0 = address of next node
+lw		$a0, 4($a0)	# $a0 = address of next node
 bne		$a0, $zero, Loop	# if $a0 != 0, go to Loop
 
 # test
 # print result
+move        $a0, $v0	# $a0 = $v0
 li		$v0, 1		# $v0 = 1
+syscall
+
+# exit
+li		$v0, 10		# $v0 = 10
 syscall
